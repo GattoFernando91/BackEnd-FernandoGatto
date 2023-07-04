@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "title": "Sports Car",
+        "description": "A sleek and sporty automobile with high performance",
+        "price": 50000,
+        "thumbnail": "image1.jpg",
+        "code": "SC001",
+        "stock": 3
+    },
+    {
+        "id": 2,
+        "title": "Family SUV",
+        "description": "A spacious and safe SUV ideal for families",
+        "price": 35000,
+        "thumbnail": "image2.jpg",
+        "code": "FS002",
+        "stock": 5
+    },
+    {
+        "id": 3,
+        "title": "Electric Car",
+        "description": "An eco-friendly and efficient vehicle with cutting-edge technology",
+        "price": 40000,
+        "thumbnail": "image3.jpg",
+        "code": "EC003",
+        "stock": 2
+    }
+]
