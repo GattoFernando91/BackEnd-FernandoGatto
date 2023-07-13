@@ -1,44 +1,14 @@
 const express = require('express');
-const fs = require('fs');
-const ProductManager = require('./ProductManager');
-
 const app = express();
-const manager = new ProductManager('products.json');
 
-app.get('/products', async (req, res) => {
-    try {
-        const limit = req.query.limit;
-        manager.loadProducts();
+app.use(express.json());
 
-        if (limit) {
-            const products = manager.getProducts().slice(0, limit);
-            res.json(products);
-        } else {
-            const products = manager.getProducts();
-            res.json(products);
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+const productsRouter = require('./routes/products');
+const cartsRouter = require('./routes/carts');
 
-app.get('/products/:pid', async (req, res) => {
-    try {
-        const productId = parseInt(req.params.pid);
-        manager.loadProducts();
-        const product = manager.getProductById(productId);
-        if (product) {
-            res.json(product);
-        } else {
-            res.status(404).json({ error: 'Product not found' });
-        }
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-});
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
 
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+app.listen(8080, () => {
+    console.log('Server listening on port 8080');
 });
