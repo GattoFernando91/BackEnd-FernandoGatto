@@ -57,22 +57,37 @@ router.post('/:cid/product/:pid', (req, res) => {
 });
 
 function getCart(cartId) {
-  const data = fs.readFileSync(cartsFilePath, 'utf8');
-  const carts = JSON.parse(data);
-  const cart = carts.find(c => c.id === cartId);
-  return cart;
+  try {
+    const data = fs.readFileSync(cartsFilePath, 'utf8');
+    const carts = JSON.parse(data);
+    const cart = carts.find(c => c.id === cartId);
+    return cart;
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error while reading carts file');
+  }
 }
 
 function saveCart(cart) {
-  const data = fs.readFileSync(cartsFilePath, 'utf8');
-  const carts = JSON.parse(data);
-  const existingIndex = carts.findIndex(c => c.id === cart.id);
-  if (existingIndex !== -1) {
-    carts[existingIndex] = cart;
-  } else {
-    carts.push(cart);
+  try {
+    const data = fs.readFileSync(cartsFilePath, 'utf8');
+    const carts = JSON.parse(data);
+    const existingIndex = carts.findIndex(c => c.id === cart.id);
+    if (existingIndex !== -1) {
+      carts[existingIndex] = cart;
+    } else {
+      carts.push(cart);
+    }
+    fs.writeFileSync(cartsFilePath, JSON.stringify(carts, null, 2), 'utf8');
+  } catch (error) {
+    console.error(error);
+    throw new Error('Error while saving cart');
   }
-  fs.writeFileSync(cartsFilePath, JSON.stringify(carts, null, 2), 'utf8');
 }
+
+router.use((error, req, res, next) => {
+  console.error(error);
+  res.status(500).json({ error: 'Internal server error' });
+});
 
 module.exports = router;
