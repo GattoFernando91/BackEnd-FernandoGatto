@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
-
-const cartsFilePath = './data/carts.json';
+const getCart = require('./managers/getCartManager');
+const saveCart = require('./managers/saveCartManager');
 
 router.post('/', (req, res) => {
   try {
@@ -55,35 +54,6 @@ router.post('/:cid/product/:pid', (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-
-function getCart(cartId) {
-  try {
-    const data = fs.readFileSync(cartsFilePath, 'utf8');
-    const carts = JSON.parse(data);
-    const cart = carts.find(c => c.id === cartId);
-    return cart;
-  } catch (error) {
-    console.error(error);
-    throw new Error('Error while reading carts file');
-  }
-}
-
-function saveCart(cart) {
-  try {
-    const data = fs.readFileSync(cartsFilePath, 'utf8');
-    const carts = JSON.parse(data);
-    const existingIndex = carts.findIndex(c => c.id === cart.id);
-    if (existingIndex !== -1) {
-      carts[existingIndex] = cart;
-    } else {
-      carts.push(cart);
-    }
-    fs.writeFileSync(cartsFilePath, JSON.stringify(carts, null, 2), 'utf8');
-  } catch (error) {
-    console.error(error);
-    throw new Error('Error while saving cart');
-  }
-}
 
 router.use((error, req, res, next) => {
   console.error(error);
