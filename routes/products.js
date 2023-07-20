@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ProductManager = require('../managers/productManager');
 
-const manager = new ProductManager('data/products.json')
+const manager = new ProductManager('data/products.json');
 
 router.get('/', (req, res) => {
   try {
@@ -11,10 +11,10 @@ router.get('/', (req, res) => {
 
     if (limit) {
       const products = manager.getProducts().slice(0, limit);
-      res.json(products);
+      res.render('home', { products });
     } else {
       const products = manager.getProducts();
-      res.json(products);
+      res.render('home', { products });
     }
   } catch (error) {
     console.error(error);
@@ -70,11 +70,6 @@ router.delete('/:pid', (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
   }
-});
-
-router.use((error, req, res, next) => {
-  console.error(error);
-  res.status(500).json({ error: 'Internal server error' });
 });
 
 module.exports = router;

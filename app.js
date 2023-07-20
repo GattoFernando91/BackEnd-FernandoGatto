@@ -1,7 +1,13 @@
 const express = require('express');
 const app = express();
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
+const { engine } = require('express-handlebars');
 
 app.use(express.json());
+
+app.engine('handlebars', engine());
+app.set('view engine', 'handlebars');
 
 const productsRouter = require('./routes/products');
 const cartsRouter = require('./routes/carts');
@@ -19,6 +25,11 @@ app.use((err, req, res, next) => {
 });
 
 const port = 8080;
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+http.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
 });

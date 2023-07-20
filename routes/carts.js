@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
-const getCart = require('./managers/getCartManager');
-const saveCart = require('./managers/saveCartManager');
+const getCart = require('../managers/getCartManager');
+const saveCart = require('../managers/saveCartManager');
+const io = require('socket.io')(http);
 
 router.post('/', (req, res) => {
   try {
@@ -48,7 +49,32 @@ router.post('/:cid/product/:pid', (req, res) => {
 
     saveCart(cart);
 
+    io.emit('productUpdated', cart.products);
+
     res.json({ message: 'Product added to cart successfully', cart });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/:cid/product/:pid', (req, res) => {
+  try {
+    const cartId = req.params.cid;
+    const productId = req.params.pid;
+
+    const cart = getCart(cartId);
+    const productIndex = cart.products.findIndex(p => p.product === productId);
+
+    if (productIndex !== -1) {
+      cart.products.splice(productIndex, 1);
+      saveCart(cart);
+
+      io.emit('productUpdated', cart.products);
+      res.json({ message: 'Product removed from cart successfully', cart });
+    } else {
+      res.status(404).json({ error: 'Product not found in cart' });
+    }
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
